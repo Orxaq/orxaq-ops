@@ -9,6 +9,15 @@
 
 Reusable autonomy control-plane for Orxaq. The autonomy runtime is a standalone Python package (`orxaq-autonomy`) with protocol-based task execution, optional MCP context ingestion, cross-platform lifecycle management, and local-first monitoring helpers (dashboard/router/RPA scheduler).
 
+## Documentation Boundaries
+
+Use one primary surface per question:
+
+- Product, architecture, and reference docs for Orxaq live in `../orxaq/docs/`.
+- Agent-operating truth for Orxaq lives in `../orxaq/.claude/`.
+- This repo owns autonomy, control-plane, and CASS documentation.
+- The integrated surface map lives in `../orxaq/docs/documentation-manifest.json`.
+
 ## What Changed
 
 - Autonomy is packaged in `src/orxaq_autonomy` (independent package, reusable outside this repo).
@@ -16,6 +25,7 @@ Reusable autonomy control-plane for Orxaq. The autonomy runtime is a standalone 
 - Runner can inject optional **MCP context** (`--mcp-context-file`) into prompts.
 - Supervisor/manager is Python-based and works on macOS + Windows in user space (no admin required).
 - IDE launch/open flows are IDE-independent (VS Code, Cursor, PyCharm).
+- CASS now defaults to scratch-clone plus gated promotion with YubiKey-signed policy, with an optional macOS Endpoint Security overlay in `apps/cass-control`.
 
 ## Layout
 
@@ -39,13 +49,17 @@ Reusable autonomy control-plane for Orxaq. The autonomy runtime is a standalone 
 - `router_profiles/*.(json|yaml)` - router profile overlays (`local`, `lan`, `travel`) for `config/router.active.yaml`.
 - `docs/autonomy-halt-mitigation.md` - failure-mode playbook.
 - `docs/release-pypi.md` - trusted-publishing release runbook.
+- `docs/cass-kernel-gate.md` - CASS runbook for scratch-clone gated promotion, YubiKey signing, and optional Apple hardening.
+- `docs/architecture/` - plain-English architecture set, including the Apple-free primary path and the optional Apple overlay.
+- `apps/cass-control/` - optional host app + Endpoint Security system-extension scaffold for later macOS hardening.
+- `scripts/cass/` - scratch-clone and gated-promotion helpers for the CASS workflow.
 
 Legacy shell scripts remain for compatibility, but `make` uses the package CLI.
 
 ## Setup
 
 ```bash
-cd /Users/sdevisch/dev/orxaq-ops
+cd /path/to/orxaq-ops
 cp .env.autonomy.example .env.autonomy
 python3 -m pip install -e .
 ```
@@ -195,7 +209,7 @@ Skill protocol + MCP context are data-driven, so you can swap project/task conte
   - `make hosted-controls-check`
   - `make readiness-check`
 
-See `/Users/sdevisch/dev/orxaq-ops/docs/VERSIONING.md`.
+See `docs/VERSIONING.md`.
 
 ## CI/CD
 
@@ -209,12 +223,12 @@ See `/Users/sdevisch/dev/orxaq-ops/docs/VERSIONING.md`.
 
 ## Governance
 
-- `/Users/sdevisch/dev/orxaq-ops/CODE_OF_CONDUCT.md`
-- `/Users/sdevisch/dev/orxaq-ops/GOVERNANCE.md`
-- `/Users/sdevisch/dev/orxaq-ops/SUPPORT.md`
-- `/Users/sdevisch/dev/orxaq-ops/SECURITY.md`
-- `/Users/sdevisch/dev/orxaq-ops/docs/AI_BEST_PRACTICES.md`
-- `/Users/sdevisch/dev/orxaq-ops/docs/DASHBOARD.md`
+- `CODE_OF_CONDUCT.md`
+- `GOVERNANCE.md`
+- `SUPPORT.md`
+- `SECURITY.md`
+- `docs/AI_BEST_PRACTICES.md`
+- `docs/DASHBOARD.md`
 
 ## Non-Admin Hardening (Windows/macOS)
 
@@ -233,4 +247,3 @@ See `/Users/sdevisch/dev/orxaq-ops/docs/VERSIONING.md`.
 - Validation retries + fallback validation commands.
 - Prompt includes file-type profile + repo-state hints + protocol requirements.
 - Machine-readable health snapshot (`make health`) written to `artifacts/autonomy/health.json`.
-

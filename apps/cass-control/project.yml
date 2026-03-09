@@ -1,0 +1,53 @@
+name: CASSControl
+options:
+  minimumXcodeGenVersion: 2.39.0
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    PRODUCT_BUNDLE_IDENTIFIER: com.orxaq.cass.control
+packages:
+  CassKernelGate:
+    path: ../../tools/cass-kernel-gate
+targets:
+  CASSControl:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: CASSControl/Sources
+    info:
+      path: CASSControl/Info.plist
+    entitlements:
+      path: CASSControl/CASSControl.entitlements
+    dependencies:
+      - target: CASSEnforcer
+        embed: true
+      - package: CassKernelGate
+        product: CassPolicyCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.orxaq.cass.control
+        CODE_SIGN_ENTITLEMENTS: CASSControl/CASSControl.entitlements
+        DEVELOPMENT_TEAM: TEAMID
+    scheme:
+      testTargets: []
+  CASSEnforcer:
+    type: systemExtension
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: CASSEnforcer/Sources
+    info:
+      path: CASSEnforcer/Info.plist
+    entitlements:
+      path: CASSEnforcer/CASSEnforcer.entitlements
+    dependencies:
+      - package: CassKernelGate
+        product: CassPolicyCore
+      - package: CassKernelGate
+        product: CassEndpointSecuritySupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.orxaq.cass.enforcer
+        CODE_SIGN_ENTITLEMENTS: CASSEnforcer/CASSEnforcer.entitlements
+        DEVELOPMENT_TEAM: TEAMID
